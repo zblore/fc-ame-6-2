@@ -1,0 +1,120 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+
+version: "v0.4"
+
+project:
+  name: "fc-ame-6-2"
+  description: >-
+    A machine-checked proof that an absolutely maximally entangled state of six qubits
+    exists, against the definitions of Formal Conjectures Open Quantum Problem 35. The
+    witness is the six-qubit prism graph state.
+  authors:
+    - "Zayn Blore"
+  license: "Apache-2.0"
+
+sources:
+  - title: >-
+      Multipartite entanglement, quantum-error-correcting codes, and entangling power
+      of quantum evolutions
+    authors:
+      - "A. J. Scott"
+    id: "https://doi.org/10.1103/PhysRevA.69.052330"
+    type: "article"
+    location: "AME(6,2) existence, as cited by Formal Conjectures"
+    relationship: "formalizes"
+    author_endorsement: "not-contacted"
+  - title: "Absolutely maximally entangled states of seven qubits do not exist"
+    authors:
+      - "F. Huber"
+      - "O. Gühne"
+      - "J. Siewert"
+    id: "https://doi.org/10.1103/PhysRevLett.118.200502"
+    type: "article"
+    location: "Status of AME(n,2): exists for n = 2, 3, 5, 6 only"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+  - title: "Absolutely Maximally Entangled Qudit Graph States"
+    authors:
+      - "Wolfram Helwig"
+    id: "arXiv:1306.2879"
+    type: "article"
+    location: "AME states as graph states; the prism state here is one"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+
+related_formalizations:
+  - id: "https://github.com/google-deepmind/formal-conjectures/blob/40a8592cb6f7e96cb9a8275d96bb3e013feeb1dc/FormalConjectures/OpenQuantumProblems/35.lean"
+    relationship: "builds-on"
+    note: >-
+      Supplies the statement `OpenQuantumProblem35.ame_6_2_exists` and every definition
+      it uses. This repository depends on Formal Conjectures at that commit and proves
+      the same proposition without using the declaration left as `sorry` there.
+
+classification:
+  arxiv:
+    - "quant-ph"
+  msc2020:
+    - "81P40"
+    - "81P70"
+
+automation:
+  methods:
+    - method: "agent"
+      models:
+        - "Claude Opus 5.5"
+      framework: "Claude Code"
+  notes: "I drafted the Lean with Claude Code and checked the witness numerically first."
+
+review:
+  status: "author-verified"
+  reviewers:
+    - "Zayn Blore"
+    - "Claude Fable 5.1 (independent agent review, 2026-10-08)"
+    - "OpenAI Astra, gpt-6-astra (independent agent review, 2026-10-08)"
+  notes: >-
+    Checks run: statement term-identical to Formal Conjectures' `ame_6_2_exists`; axioms
+    limited to propext, Classical.choice and Quot.sound; a control state (the prism without
+    one rung) fails the same identity and is proved not AME; `lake build` with
+    Mathlib's standard linter set, `lake exe lint-style AME62` and `lake exe runLinter AME62`
+    pass; the audits in `audit/` pass, and each was shown to fail on a planted fault.
+
+status:
+  scope: "Full proof of the single Formal Conjectures statement `ame_6_2_exists`."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+    - "propext"
+    - "Classical.choice"
+    - "Quot.sound"
+  main_results:
+    - description: "An AME(6,2) state exists."
+      declaration: "AME62.ame_6_2_exists"
+      file: "AME62/FormalTarget.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Classical.choice"
+        - "Quot.sound"
+
+fidelity:
+  divergences: >-
+    None in the statement, which is Formal Conjectures' own. The 720 permutations in
+    `IsAME` are not enumerated. The general lemma
+    `AME62.hasMaximallyMixedFirstReduction_of_kept` shows the reduction depends only on which
+    parties are kept (20 sets). The prism's rotation symmetry (`AME62.prismSign_rotate`) and
+    the cover `AME62.exists_rep` bring those 20 down to 4, via the general lemma
+    `AME62.hasMaximallyMixedFirstReduction_of_invariant`. The finite core
+    `AME62.prismSign_trace` is checked by `decide +kernel` over those 4 representative
+    permutations (no `native_decide`).
+
+alignment:
+  namespaces:
+    - "AME62"
+  statements:
+    - source: "Formal Conjectures, OpenQuantumProblem35.ame_6_2_exists"
+      lean: "AME62.ame_6_2_exists"
+      module: "AME62.FormalTarget"
+      status: "proved"
+
+acknowledgements: >-
+  Thanks to the authors of Lean 4, Mathlib and Formal Conjectures.
